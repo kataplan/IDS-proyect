@@ -8,8 +8,7 @@ def readFile(string):
     return file_data
 
 def reduce_data(file_data, data_limit, class_1_bool,class_2_bool, class_3_bool):
-    
-    
+    #ACA DEBERIA LIMITARSE LA WEA
     return file_data
 
 def classify(file_data):
