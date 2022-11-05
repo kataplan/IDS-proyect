@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 
@@ -8,8 +7,43 @@ def readFile(string):
     return file_data
 
 def reduce_data(file_data, data_limit, class_1_bool,class_2_bool, class_3_bool):
-    #ACA DEBERIA LIMITARSE LA WEA
-    return file_data
+    new_file_data=[]
+    row=0
+    data_class_1= 0
+    data_class_2= 0
+    data_class_3= 0
+    for i in file_data[:, 41]:
+        i=int(i)
+        if(data_class_1+data_class_2+data_class_3 == 0):
+            if(class_1_bool and i == 1):
+                new_file_data = [file_data[row]]
+                data_class_1= data_class_1 + 1
+                
+            elif(class_2_bool and i == 2):
+                new_file_data = [file_data[row]]
+                data_class_2= data_class_2 + 1
+              
+            elif(class_3_bool and i == 3):
+                new_file_data = [file_data[row]] 
+                data_class_3= data_class_3 + 1
+        
+        elif(class_1_bool and i == 1 and data_class_1 < data_limit):
+            new_file_data = np.append(new_file_data, [file_data[row]], axis=0)
+            data_class_1= data_class_1 + 1
+            
+        elif(class_2_bool and i == 2 and data_class_2 < data_limit):
+            new_file_data = np.append(new_file_data, [file_data[row]], axis=0)
+            data_class_2= data_class_2 + 1
+            
+        elif(class_3_bool and i == 3 and data_class_3 < data_limit):
+            new_file_data = np.append(new_file_data, [file_data[row]], axis=0)
+            data_class_3= data_class_3 + 1
+        row = row + 1
+    
+    print(data_class_1)
+    print(new_file_data)
+    
+    return new_file_data
 
 def classify(file_data):
     count = 0
