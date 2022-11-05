@@ -1,4 +1,4 @@
-from Normalization import *
+from functions_sv import *
 
 config = readFile("cnf_sv.csv")
 
@@ -17,6 +17,7 @@ train = classify(train)
 test = classify(test)
 
 train = reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
+test = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
 
 train = transform_categoric_variables(train,1)
 train = transform_categoric_variables(train,2)
@@ -26,4 +27,5 @@ test = transform_categoric_variables(test,1)
 test = transform_categoric_variables(test,2)
 test = transform_categoric_variables(test,3)
 
+train= normalize_data(train)
 test = normalize_data(test)
