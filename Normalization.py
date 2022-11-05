@@ -40,9 +40,6 @@ def reduce_data(file_data, data_limit, class_1_bool,class_2_bool, class_3_bool):
             data_class_3= data_class_3 + 1
         row = row + 1
     
-    print(data_class_1)
-    print(new_file_data)
-    
     return new_file_data
 
 def classify(file_data):
