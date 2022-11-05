@@ -118,7 +118,6 @@ def normalize_column(file_data, column):
     row=0
     if( max != min ):
         for x in file_data[:,column]:
-            
             file_data[row,column]= float(file_data[row,column])
             x= float(x)
             file_data[row,column] = ( ( x - min ) / ( max - min )) * ( b - a ) + a 
