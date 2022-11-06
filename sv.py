@@ -30,4 +30,4 @@ train = transform_categoric_variables(train,3)
 train= normalize_data(train)
 #test = normalize_data(test)
 
-print(calc_joint_entropy(train[:1],train[:2]))
+print(calc_joint_entropy(train[:,1],train[:,4]))
