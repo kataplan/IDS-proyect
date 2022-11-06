@@ -130,5 +130,30 @@ def normalize_data(file_data):
         file_data = normalize_column(file_data,i)
     return file_data
 
+def calc_column_entropy(array):
+    entropy = 0
+    value,d = np.unique(array, return_counts=True)
+    N = len(array)
+    p = d / N
+    I_x = np.ceil(np.log2(N))
+    i=1
+    for p_i in p: 
+        if(I_x >= i):
+            break
+        if p_i > 0:
+            entropy =+  p_i * np.log2(p_i)
+        i=+1
+    return  -entropy
 
-
+def calc_joint_entropy(array_x, array_y):
+    entropy = 0
+    value,d_x = np.unique(array_x, return_counts=True)
+    value,d_y = np.unique(array_y, return_counts=True)
+    N = len(array_x)
+    p = np.matmul(d_x*d_y) / N
+    I_x = np.ceil(np.log2(N))
+    I_y = np.ceil(np.log2(N))
+    i=1
+    print(p)
+    
+    return  -entropy

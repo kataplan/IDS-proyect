@@ -10,22 +10,24 @@ class_2_bool = bool(int(config[4]))
 class_3_bool = bool(int(config[5]))
 
 train = readFile("KDDtrain.txt")
-test = readFile("KDDtest.txt")
+#test = readFile("KDDtest.txt")
 
 
 train = classify(train)
-test = classify(test)
+#test = classify(test)
 
 train = reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
-test = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
+##test = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
 
 train = transform_categoric_variables(train,1)
 train = transform_categoric_variables(train,2)
 train = transform_categoric_variables(train,3)
 
-test = transform_categoric_variables(test,1)
-test = transform_categoric_variables(test,2)
-test = transform_categoric_variables(test,3)
+#test = transform_categoric_variables(test,1)
+#test = transform_categoric_variables(test,2)
+#test = transform_categoric_variables(test,3)
 
 train= normalize_data(train)
-test = normalize_data(test)
+#test = normalize_data(test)
+
+print(calc_joint_entropy(train[:1],train[:2]))
