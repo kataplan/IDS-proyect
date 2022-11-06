@@ -141,8 +141,8 @@ def calc_column_entropy(array):
         if(I_x >= i):
             break
         if p_i > 0:
-            entropy =+  p_i * np.log2(p_i)
-        i=+1
+            entropy = entropy+  p_i * np.log2(p_i)
+        i=i+1
     return  -entropy
 
 def calc_joint_entropy(array_x, array_y):
@@ -150,10 +150,22 @@ def calc_joint_entropy(array_x, array_y):
     value,d_x = np.unique(array_x, return_counts=True)
     value,d_y = np.unique(array_y, return_counts=True)
     N = len(array_x)
-    p = np.matmul(d_x*d_y) / N
+    print(N)
     I_x = np.ceil(np.log2(N))
     I_y = np.ceil(np.log2(N))
     i=1
-    print(p)
+    print("I_x = "+str(I_x))
+    print("I_y = "+str(I_y))
+    print("tamaño d_x = "+str(len(d_x)))
+    print("tamaño d_y = "+str(len(d_y)))
+    while i < I_x:
+        print(i)
+        j=1
+        while j < I_y:
+            p_i_j = ( d_x[i] * d_y[j] ) / N 
+            entropy = entropy +  p_i_j * np.log2(p_i_j)
+            j=j+1
+        i=i+1
+        
     
-    return  -entropy
+    return  -1*entropy
