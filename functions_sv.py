@@ -5,7 +5,7 @@ def readFile(string):
     return file_data
 
 #function to reduce the data given the config limiters
-def reduce_data(file_data, data_limit, class_1_bool,class_2_bool, class_3_bool):
+def reduce_data(file_data: np.ndarray, data_limit, class_1_bool,class_2_bool, class_3_bool):
     new_file_data=[]
     row=0
     data_class_1= 0
@@ -43,7 +43,7 @@ def reduce_data(file_data, data_limit, class_1_bool,class_2_bool, class_3_bool):
     
     return new_file_data
 
-def classify(file_data):
+def classify(file_data: np.ndarray):
     count = 0
     #data dictionary
     class_1 = ['normal']
@@ -69,7 +69,7 @@ def classify(file_data):
     return file_data
 
 #find the array with only one of each data in the column
-def singularity_array(file_data, column):
+def singularity_array(file_data: np.ndarray, column):
     array = []
     for i in file_data[:, column]:
         if i not in array:
@@ -78,7 +78,7 @@ def singularity_array(file_data, column):
     return array
 
 #function to change from categoric variables to numeric
-def transform_categoric_variables(file_data, column):
+def transform_categoric_variables(file_data: np.ndarray, column):
     array = singularity_array(file_data, column)
     count = 0
     for i in file_data[:, column]:
@@ -93,57 +93,63 @@ def matrix_to_integer(X):
             X[i][j] = float(X[i][j])
     return X
 
-#function to find the maximun in column
-def findMax(file_data, column):
-    max = 0
-    for i in file_data[:, column]:
-        if( float(i) > max ):
-            max = float(i)
-    return max
 
-#function to find the minimun in column
-def findMin(file_data, column):
-    min = 900000
-    for i in file_data[:, column]:
-        if( float(i) < min ):
-            min = float(i)
-    return min
 
 #Normalize one column
-def normalize_column(file_data, column):
-    min = findMin(file_data, column)
-    max = findMax(file_data, column)
+def normalize_column(file_data: np.ndarray):
+    file_data = file_data.astype(np.float)
+    min = file_data.min()
+    max = file_data.max()
     b = 0.99
     a = 0.01
     row=0
     if( max != min ):
-        for x in file_data[:,column]:
-            file_data[row,column]= float(file_data[row,column])
+        for x in file_data:
+            file_data[row]= float(file_data[row])
             x= float(x)
-            file_data[row,column] = ( ( x - min ) / ( max - min )) * ( b - a ) + a 
+            file_data[row] = ( ( x - min ) / ( max - min )) * ( b - a ) + a 
             row = row + 1
     return file_data
 
 #Normalize all the data
-def normalize_data(file_data):
+def normalize_data(file_data: np.ndarray):
     for i in range(0 , 40):
-        file_data = normalize_column(file_data,i)
+        file_data = normalize_column(file_data[:,i])
     return file_data
 
-def calc_column_entropy(array):
-    entropy = 0
-    value,d = np.unique(array, return_counts=True)
-    N = len(array)
-    p = d / N
-    I_x = np.ceil(np.log2(N))
-    i=1
-    for p_i in p: 
-        if(I_x >= i):
-            break
-        if p_i > 0:
-            entropy = entropy+  p_i * np.log2(p_i)
-        i=i+1
-    return  -entropy
+def calc_entropy(file_data: np.ndarray):
+    rows, columns = file_data.shape
+    I = int(np.ceil(np.log2(rows)))
+    file_data = file_data.astype(np.float)
+    entropy_list = []
+    for i in range(columns-1):
+        file_data_column = file_data[:,i]
+        min_x = file_data_column.min()
+        max_x = file_data_column.max()
+        partition_size = ( max_x - min_x ) / I
+        values, count = np.unique(file_data_column, return_counts=True)
+        filtered_values = dict(zip(values, count))
+        entropy = 0
+        for j in range(I):  #moving in partition
+            lower_bound = min_x * j * partition_size 
+            upper_bound = min_x * j+1 * partition_size 
+            item_list = []
+            for item in filtered_values.items():
+                if(item[0] >= lower_bound and item[0] <= upper_bound):
+                    item_list.append(item)
+            d_i= 0
+            for item  in item_list:
+            
+                d_i= d_i + item[1]
+    
+            probability = d_i / rows
+    
+            if(probability >0):
+                entropy = entropy + probability*np.log2(1/probability)
+        entropy_list.append(entropy)
+    entropy_list = normalize_column(np.array(entropy_list))
+    print(entropy_list)
+    
 
 def calc_joint_entropy(array_x, array_y):
     entropy = 0
