@@ -4,24 +4,26 @@ config = readFile("cnf_sv.csv")
 
 train_size = int(config[0])
 test_size  = int(config[1])
-relevance_value = int(config[2])
+k = int(config[2])
 class_1_bool = bool(int(config[4]))
 class_2_bool = bool(int(config[5]))
 class_3_bool = bool(int(config[6]))
+
 
 train = readFile("KDDtrain.txt")
 #test = readFile("KDDtest.txt")
 
 
 train = classify(train)
-#test = classify(test)
-
-train = reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
-##test = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
 
 train = transform_categoric_variables(train,1)
 train = transform_categoric_variables(train,2)
 train = transform_categoric_variables(train,3)
+
+#test = classify(test)
+
+train_x, train_y= reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
+##test = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
 
 #test = transform_categoric_variables(test,1)
 #test = transform_categoric_variables(test,2)
@@ -29,6 +31,22 @@ train = transform_categoric_variables(train,3)
 
 #train= normalize_data(train)
 #test = normalize_data(test)
+list_entropy_x = calc_entropy_x(train_x)
+entropy_y = calc_entropy_y(train_y)
+array = []
+for i in range(len(train_x[0])):
+    entropy_x = list_entropy_x[i]
+    entropy_xy = calc_joint_entropy(train_x[:,i], train_y)
+    correlation = 2*entropy_xy/(entropy_x+entropy_y)
+    array.append([correlation,i])
 
-calc_entropy_x(train)
-calc_entropy_y(train[:, 0])
+array.sort(key=lambda a: a[0] ,reverse=True)
+a = []
+b = []
+
+for i in range(k):
+    a.append(int(array[i][1]))
+    b.append(array[i][0])
+b = normalize_column(np.array(b))
+np.savetxt("index.csv",a,delimiter=",", fmt='%d')
+np.savetxt("filter.csv",b, delimiter=",")
