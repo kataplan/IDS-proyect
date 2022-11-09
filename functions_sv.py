@@ -41,7 +41,7 @@ def reduce_data(file_data: np.ndarray, data_limit, class_1_bool,class_2_bool, cl
             data_class_3= data_class_3 + 1
         row = row + 1
     
-    return new_file_data
+    return new_file_data[:, range(0,41)], new_file_data[:,41]
 
 def classify(file_data: np.ndarray):
     count = 0
@@ -113,7 +113,7 @@ def normalize_column(file_data: np.ndarray):
 
 #Normalize all the data
 def normalize_data(file_data: np.ndarray):
-    for i in range(0 , 40):
+    for i in range(len(file_data[0])):
         file_data = normalize_column(file_data[:,i])
     return file_data
 
@@ -126,20 +126,21 @@ def calc_entropy_x(file_data: np.ndarray):
     I = int(np.ceil(np.sqrt(rows)))
     file_data = file_data.astype(np.float)
     entropy_list = []
-    for i in range(columns-1):
+    
+
+    for i in range(columns):
         file_data_column = file_data[:,i]
         min_x = file_data_column.min()
         max_x = file_data_column.max()
+        R = max_x - min_x
         partition_size = ( max_x - min_x ) / I
         values, count = np.unique(file_data_column, return_counts=True)
         filtered_values = dict(zip(values, count))
         entropy = 0
-
-        for j in range(I):  #moving in partition
-            lower_bound = min_x + (j * partition_size)
-            upper_bound = min_x + ((j + 1) * partition_size)
+        for j in range(0,I):  #moving in partition
+            lower_bound = min_x + R/I *j
+            upper_bound = min_x + R/I *(j+1)
             item_list = []
-
             for item in filtered_values.items():
                 if(item[0] >= lower_bound and item[0] <= upper_bound):
                     item_list.append(item)
@@ -150,18 +151,12 @@ def calc_entropy_x(file_data: np.ndarray):
                     d_i= d_i + item[1]
             
             probability = d_i / rows
-            
             if(probability != 0):
-                entropy = entropy + probability * np.log2(probability)
-            else:
-                entropy = entropy + 0
-        
+                entropy = entropy + probability * np.log2(probability)        
         if(entropy != 0):
             entropy_list.append(-entropy)
         else:
             entropy_list.append(entropy)
-        
-    print("entropy_list:", entropy_list)
     return entropy_list
 
 def calc_entropy_y(file_data: np.ndarray):
@@ -170,41 +165,29 @@ def calc_entropy_y(file_data: np.ndarray):
     entropy = 0
 
     filtered_values = dict(zip(count[0], count[1]))
-    # print(filtered_values)
     
     for i in np.unique(file_data):
 
         freq = filtered_values[i]
         prob = freq/N
 
-        entropy = entropy + (prob * np.log2(1/prob))
+        entropy = entropy + (prob * np.log2(prob))
 
-    return entropy
+    return -entropy
+def jointEntropy(df,target):
+    x_unique_values = df.unique()
+    y_unique_values = target.unique()
+    sum = 0
 
-# def calc_joint_entropy(array_x, array_y):
-#     entropy = 0
-#     value,d_x = np.unique(array_x, return_counts=True)
-#     value,d_y = np.unique(array_y, return_counts=True)
-#     N = len(array_x)
-#     print(N)
-#     I_x = np.ceil(np.log2(N))
-#     I_y = np.ceil(np.log2(N))
-#     i=1
-#     print("I_x = "+str(I_x))
-#     print("I_y = "+str(I_y))
-#     print("tamaño d_x = "+str(len(d_x)))
-#     print("tamaño d_y = "+str(len(d_y)))
-#     while i < I_x:
-#         print(i)
-#         j=1
-#         while j < I_y:
-#             p_i_j = ( d_x[i] * d_y[j] ) / N 
-#             entropy = entropy +  p_i_j * np.log2(p_i_j)
-#             j=j+1
-#         i=i+1
     
-#     return  -1 * entropy
-
-def calc_joint_entropy(array_x, array_y):
-    
-    return 
+def calc_joint_entropy(array_x, array_y ):
+    entropy = 0.0
+    x_value_list = np.unique(array_x)
+    y_value_list = np.unique(array_y)
+    N = array_x.size
+    for i_x in x_value_list:
+        for j_y in y_value_list:
+            p_xy = len(np.where(np.in1d(np.where( array_x==i_x )[0],np.where( array_y==j_y )[0])==True)[0])/N
+            if p_xy > 0.0:
+                entropy += p_xy * np.log2(p_xy)
+    return -entropy
