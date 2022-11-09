@@ -117,9 +117,13 @@ def normalize_data(file_data: np.ndarray):
         file_data = normalize_column(file_data[:,i])
     return file_data
 
+# Normalize entropy
+def normalize_entropy(entropy: np.float, I: np.int, x: np.int):
+    return (1/(np.log(I)/np.log(x)))*entropy
+
 def calc_entropy(file_data: np.ndarray):
     rows, columns = file_data.shape
-    I = int(np.ceil(np.log2(rows)))
+    I = int(np.ceil(np.sqrt(rows)))
     file_data = file_data.astype(np.float)
     entropy_list = []
     for i in range(columns-1):
@@ -131,25 +135,32 @@ def calc_entropy(file_data: np.ndarray):
         filtered_values = dict(zip(values, count))
         entropy = 0
         for j in range(I):  #moving in partition
-            lower_bound = min_x * j * partition_size 
-            upper_bound = min_x * j+1 * partition_size 
+            lower_bound = min_x + (j * partition_size)
+            upper_bound = min_x + ((j + 1) * partition_size)
             item_list = []
             for item in filtered_values.items():
                 if(item[0] >= lower_bound and item[0] <= upper_bound):
                     item_list.append(item)
+
             d_i= 0
-            for item  in item_list:
+            for item in item_list:
+                if item:
+                    d_i= d_i + item[1]
             
-                d_i= d_i + item[1]
-    
             probability = d_i / rows
-    
-            if(probability >0):
-                entropy = entropy + probability*np.log2(1/probability)
-        entropy_list.append(entropy)
-    entropy_list = normalize_column(np.array(entropy_list))
-    print(entropy_list)
-    
+            
+            if(probability != 0):
+                entropy = entropy + probability * np.log2(probability)
+            else:
+                entropy = entropy + 0
+        
+        if(entropy != 0):
+            entropy_list.append(-entropy)
+        else:
+            entropy_list.append(entropy)
+        
+    print("entropy_list:", entropy_list)
+    return entropy_list
 
 def calc_joint_entropy(array_x, array_y):
     entropy = 0
@@ -172,6 +183,5 @@ def calc_joint_entropy(array_x, array_y):
             entropy = entropy +  p_i_j * np.log2(p_i_j)
             j=j+1
         i=i+1
-        
     
-    return  -1*entropy
+    return  -1 * entropy
