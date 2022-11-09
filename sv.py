@@ -30,4 +30,5 @@ train = transform_categoric_variables(train,3)
 #train= normalize_data(train)
 #test = normalize_data(test)
 
-calc_entropy(train)
+calc_entropy_x(train)
+calc_entropy_y(train[:, 0])
