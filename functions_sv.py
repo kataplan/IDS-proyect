@@ -121,7 +121,7 @@ def normalize_data(file_data: np.ndarray):
 def normalize_entropy(entropy: np.float, I: np.int, x: np.int):
     return (1/(np.log(I)/np.log(x)))*entropy
 
-def calc_entropy(file_data: np.ndarray):
+def calc_entropy_x(file_data: np.ndarray):
     rows, columns = file_data.shape
     I = int(np.ceil(np.sqrt(rows)))
     file_data = file_data.astype(np.float)
@@ -134,15 +134,17 @@ def calc_entropy(file_data: np.ndarray):
         values, count = np.unique(file_data_column, return_counts=True)
         filtered_values = dict(zip(values, count))
         entropy = 0
+
         for j in range(I):  #moving in partition
             lower_bound = min_x + (j * partition_size)
             upper_bound = min_x + ((j + 1) * partition_size)
             item_list = []
+
             for item in filtered_values.items():
                 if(item[0] >= lower_bound and item[0] <= upper_bound):
                     item_list.append(item)
 
-            d_i= 0
+            d_i = 0
             for item in item_list:
                 if item:
                     d_i= d_i + item[1]
@@ -162,26 +164,47 @@ def calc_entropy(file_data: np.ndarray):
     print("entropy_list:", entropy_list)
     return entropy_list
 
-def calc_joint_entropy(array_x, array_y):
+def calc_entropy_y(file_data: np.ndarray):
+    N = file_data.size
+    count = np.unique(file_data, return_counts=True)
     entropy = 0
-    value,d_x = np.unique(array_x, return_counts=True)
-    value,d_y = np.unique(array_y, return_counts=True)
-    N = len(array_x)
-    print(N)
-    I_x = np.ceil(np.log2(N))
-    I_y = np.ceil(np.log2(N))
-    i=1
-    print("I_x = "+str(I_x))
-    print("I_y = "+str(I_y))
-    print("tamaño d_x = "+str(len(d_x)))
-    print("tamaño d_y = "+str(len(d_y)))
-    while i < I_x:
-        print(i)
-        j=1
-        while j < I_y:
-            p_i_j = ( d_x[i] * d_y[j] ) / N 
-            entropy = entropy +  p_i_j * np.log2(p_i_j)
-            j=j+1
-        i=i+1
+
+    filtered_values = dict(zip(count[0], count[1]))
+    # print(filtered_values)
     
-    return  -1 * entropy
+    for i in np.unique(file_data):
+
+        freq = filtered_values[i]
+        prob = freq/N
+
+        entropy = entropy + (prob * np.log2(1/prob))
+
+    return entropy
+
+# def calc_joint_entropy(array_x, array_y):
+#     entropy = 0
+#     value,d_x = np.unique(array_x, return_counts=True)
+#     value,d_y = np.unique(array_y, return_counts=True)
+#     N = len(array_x)
+#     print(N)
+#     I_x = np.ceil(np.log2(N))
+#     I_y = np.ceil(np.log2(N))
+#     i=1
+#     print("I_x = "+str(I_x))
+#     print("I_y = "+str(I_y))
+#     print("tamaño d_x = "+str(len(d_x)))
+#     print("tamaño d_y = "+str(len(d_y)))
+#     while i < I_x:
+#         print(i)
+#         j=1
+#         while j < I_y:
+#             p_i_j = ( d_x[i] * d_y[j] ) / N 
+#             entropy = entropy +  p_i_j * np.log2(p_i_j)
+#             j=j+1
+#         i=i+1
+    
+#     return  -1 * entropy
+
+def calc_joint_entropy(array_x, array_y):
+    
+    return 
