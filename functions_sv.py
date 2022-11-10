@@ -174,11 +174,6 @@ def calc_entropy_y(file_data: np.ndarray):
         entropy = entropy + (prob * np.log2(prob))
 
     return -entropy
-def jointEntropy(df,target):
-    x_unique_values = df.unique()
-    y_unique_values = target.unique()
-    sum = 0
-
     
 def calc_joint_entropy(array_x, array_y ):
     entropy = 0.0
