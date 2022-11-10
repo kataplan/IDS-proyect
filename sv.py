@@ -37,7 +37,8 @@ array = []
 for i in range(len(train_x[0])):
     entropy_x = list_entropy_x[i]
     entropy_xy = calc_joint_entropy(train_x[:,i], train_y)
-    correlation = 2*entropy_xy/(entropy_x+entropy_y)
+    G = entropy_x+ entropy_y - entropy_xy
+    correlation = 2* G/(entropy_y + entropy_xy)
     array.append([correlation,i])
 
 array.sort(key=lambda a: a[0] ,reverse=True)
