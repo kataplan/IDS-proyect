@@ -133,7 +133,6 @@ def calc_entropy_x(file_data: np.ndarray):
         min_x = file_data_column.min()
         max_x = file_data_column.max()
         R = max_x - min_x
-        partition_size = ( max_x - min_x ) / I
         values, count = np.unique(file_data_column, return_counts=True)
         filtered_values = dict(zip(values, count))
         entropy = 0
