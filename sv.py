@@ -52,11 +52,9 @@ b = normalize_column(np.array(b))
 np.savetxt("index.csv",a,delimiter=",", fmt='%d')
 np.savetxt("filter.csv",b, delimiter=",")
 
-train = train[:,a]
-print(train.shape)
-P, D, Q = np.linalg.svd(train.astype(np.float), full_matrices=False)
+train_x = train_x[:,a]
+print(train_x.shape)
+P, D, Q = np.linalg.svd(train_x.astype(np.float), full_matrices=False)
 v_matrix = np.transpose(Q)
-print(v_matrix)
-print(q)
 v_matrix.shape
 np.savetxt("filter_v.csv",v_matrix,delimiter=",")
