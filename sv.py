@@ -5,6 +5,7 @@ config = readFile("cnf_sv.csv")
 train_size = int(config[0])
 test_size  = int(config[1])
 k = int(config[2])
+singularity_vector = int(config[3])
 class_1_bool = bool(int(config[4]))
 class_2_bool = bool(int(config[5]))
 class_3_bool = bool(int(config[6]))
@@ -51,10 +52,13 @@ for i in range(k):
 b = normalize_column(np.array(b))
 np.savetxt("index.csv",a,delimiter=",", fmt='%d')
 np.savetxt("filter.csv",b, delimiter=",")
-
 train_x = train_x[:,a]
+train_x = train_x.astype(np.float)
+train_y = train_y.astype(np.int64)
+P, D, matrix_v = np.linalg.svd(train_x, full_matrices=False)
+
+train_x = np.matmul(matrix_v[:,:singularity_vector].T , train_x.T)
 print(train_x.shape)
-P, D, Q = np.linalg.svd(train_x.astype(np.float), full_matrices=False)
-v_matrix = np.transpose(Q)
-v_matrix.shape
-np.savetxt("filter_v.csv",v_matrix,delimiter=",")
+np.savetxt("filter_v.csv",matrix_v,delimiter=",")
+np.savetxt("dtrn.csv",train_x,delimiter=",")
+np.savetxt("etrn.csv",train_y,delimiter=",",fmt='%d')
