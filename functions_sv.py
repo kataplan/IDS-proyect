@@ -93,8 +93,6 @@ def matrix_to_integer(X):
             X[i][j] = float(X[i][j])
     return X
 
-
-
 #Normalize one column
 def normalize_column(file_data: np.ndarray):
     file_data = file_data.astype(np.float)
@@ -114,7 +112,7 @@ def normalize_column(file_data: np.ndarray):
 #Normalize all the data
 def normalize_data(file_data: np.ndarray):
     for i in range(len(file_data[0])):
-        file_data = normalize_column(file_data[:,i])
+        file_data[:,i] = normalize_column(file_data[:,i])
     return file_data
 
 # Normalize entropy
