@@ -10,13 +10,16 @@ class_1_bool = bool(int(config[4]))
 class_2_bool = bool(int(config[5]))
 class_3_bool = bool(int(config[6]))
 
-train = readFile("KDDtrain.txt")
-train = classify(train)
-train = transform_categoric_variables(train,1)
-train = transform_categoric_variables(train,2)
-train = transform_categoric_variables(train,3)
-train_x, train_y= reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
-
+train = readFile("dtrn.csv")
+print(train.shape)
+train_x = train[:, range(13)]
+train_y = train[:,13]
+#train = classify(train)
+#train = transform_categoric_variables(train,1)
+#train = transform_categoric_variables(train,2)
+#train = transform_categoric_variables(train,3)
+#train_x, train_y= reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
+print(train_y)
 list_entropy_x = calc_entropy_x(train_x)
 entropy_y = calc_entropy_y(train_y)
 array = []
@@ -49,7 +52,7 @@ np.savetxt("filter_v.csv",matrix_v,delimiter=",")
 np.savetxt("dtrn.csv",train_x,delimiter=",")
 np.savetxt("etrn.csv",train_y,delimiter=",",fmt='%d')
 
-test = readFile("KDDtest.txt")
+test = readFile("etrn.csv")
 test = classify(test)
 test = transform_categoric_variables(test,1)
 test = transform_categoric_variables(test,2)

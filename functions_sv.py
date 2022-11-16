@@ -95,7 +95,7 @@ def matrix_to_integer(X):
 
 #Normalize one column
 def normalize_column(file_data: np.ndarray):
-    file_data = file_data.astype(np.float)
+    file_data = file_data.astype(np.float64)
     min = file_data.min()
     max = file_data.max()
     b = 0.99
@@ -116,13 +116,13 @@ def normalize_data(file_data: np.ndarray):
     return file_data
 
 # Normalize entropy
-def normalize_entropy(entropy: np.float, I: np.int, x: np.int):
+def normalize_entropy(entropy: np.float64, I: np.int64, x: np.int64):
     return (1/(np.log(I)/np.log(x)))*entropy
 
 def calc_entropy_x(file_data: np.ndarray):
     rows, columns = file_data.shape
     I = int(np.ceil(np.sqrt(rows)))
-    file_data = file_data.astype(np.float)
+    file_data = file_data.astype(np.float64)
     entropy_list = []
     
 
