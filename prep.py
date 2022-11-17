@@ -1,69 +1,68 @@
-from functions_sv import *
+# Pre-processing...
 
-config = readFile("cnf_sv.csv")
+import pandas as pd
+import numpy as np
 
-train_size = int(config[0])
-test_size  = int(config[1])
-k = int(config[2])
-singularity_vector = int(config[3])
-class_1_bool = bool(int(config[4]))
-class_2_bool = bool(int(config[5]))
-class_3_bool = bool(int(config[6]))
+# Load data
 
-train = readFile("dtrn.csv")
-print(train.shape)
-train_x = train[:, range(13)]
-train_y = train[:,13]
-#train = classify(train)
-#train = transform_categoric_variables(train,1)
-#train = transform_categoric_variables(train,2)
-#train = transform_categoric_variables(train,3)
-#train_x, train_y= reduce_data(train,train_size,class_1_bool,class_2_bool,class_3_bool)
-print(train_y)
-list_entropy_x = calc_entropy_x(train_x)
-entropy_y = calc_entropy_y(train_y)
-array = []
-train_x = normalize_data(train_x)
-for i in range(len(train_x[0])):
-    entropy_x = list_entropy_x[i]
-    entropy_xy = calc_joint_entropy(train_x[:,i], train_y)
-    G = entropy_x+ entropy_y - entropy_xy
-    correlation = 2* G/(entropy_y + entropy_xy)
-    array.append([correlation,i])
 
-array.sort(key=lambda a: a[0] ,reverse=True)
-a = []
-b = []
+def load_data(file_name:str):
+    file_data = np.genfromtxt(file_name, dtype=float, delimiter=",")
+    x = file_data[:,range(len(file_data[0])-2)]
+    y = file_data[:, len(file_data[0])-1]
+    return ( x,y )
+# Normazationg of the features
 
-for i in range(k):
-    a.append(int(array[i][1]))
-    b.append(array[i][0])
-b = normalize_column(np.array(b))
-np.savetxt("index.csv",a,delimiter=",", fmt='%d')
-np.savetxt("filter.csv",b, delimiter=",")
-train_x = train_x[:,a]
-train_x = train_x.astype(np.float64)
-train_y = train_y.astype(np.int64)
-P, D, matrix_v = np.linalg.svd(train_x, full_matrices=False)
 
-train_x = np.matmul(matrix_v[:,:singularity_vector].T , train_x.T)
+def norma_data(df: np.ndarray):
+    #move in columns
+    for i in range(len(df[0])):
+        min = df[i].min()
+        max = df[i].max()
+        b = 0.99
+        a = 0.01
+        j = 0
+        if (max != min):
+            #move in rows
+            for x in df[:,i]:                
+                df[j,i] = ((x - min) / (max - min)) * (b - a) + a
+                j = j + 1
+    return (df)
+# Create binary label
 
-np.savetxt("filter_v.csv",matrix_v,delimiter=",")
-np.savetxt("dtrn.csv",train_x,delimiter=",")
-np.savetxt("etrn.csv",train_y,delimiter=",",fmt='%d')
 
-test = readFile("etrn.csv")
-test = classify(test)
-test = transform_categoric_variables(test,1)
-test = transform_categoric_variables(test,2)
-test = transform_categoric_variables(test,3)
-test_x, test_y = reduce_data(test,test_size,class_1_bool,class_2_bool,class_3_bool)
+def label_binary(df:np.ndarray,file_name:str):
+    binary_array = []
+    aux = []
+    for x in df:
+        if(x==1):
+            aux = [1,0]
+        if(x==2):
+            aux = [0,1]
 
-test_x = normalize_data(test_x)
-test_x = test_x[:,a]
-test_x = test_x.astype(np.float64)
-test_y = test_y.astype(np.int64)
-test_x = np.matmul(matrix_v[:,:singularity_vector].T , test_x.T)
+        binary_array.append(aux)
+    np.savetxt(file_name,binary_array,delimiter=",")
+    return (binary_array)
+    
+config = np.genfromtxt("cnf_sv.csv", dtype=int, delimiter=",")
+singularity_vector = config[3]
+train_x, train_y = load_data("dtrn.csv")
+test_x, test_y = load_data("dtst.csv")
 
-np.savetxt("dtst.csv",test_x,delimiter=",")
-np.savetxt("etst.csv",test_y,delimiter=",",fmt='%d')
+train_y = label_binary(train_y,"ytrn.csv")
+test_y = label_binary(test_y, "ytst.csv")
+
+index = np.genfromtxt("index.csv", dtype=int, delimiter=",")
+train_x = train_x[:,index]
+test_x = test_x[:,index]
+filter_v = np.genfromtxt("filter_v.csv", dtype=float, delimiter=",")
+
+train_x = np.matmul(filter_v[:,:singularity_vector].T , train_x.T).T
+test_x = np.matmul(filter_v[:,:singularity_vector].T , test_x.T).T
+
+train_x = norma_data(train_x)
+test_x = norma_data(test_x)
+
+print(train_x.shape)
+np.savetxt("xtrn.csv",train_x,delimiter=",")
+np.savetxt("xtst.csv",train_x,delimiter=",")
