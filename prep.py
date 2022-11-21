@@ -4,8 +4,6 @@ import pandas as pd
 import numpy as np
 
 # Load data
-
-
 def load_data(file_name:str):
     file_data = np.genfromtxt(file_name, dtype=float, delimiter=",")
     x = file_data[:,range(len(file_data[0])-2)]
@@ -63,6 +61,5 @@ test_x = np.matmul(filter_v[:,:singularity_vector].T , test_x.T).T
 train_x = norma_data(train_x)
 test_x = norma_data(test_x)
 
-print(train_x.shape)
 np.savetxt("xtrn.csv",train_x,delimiter=",")
 np.savetxt("xtst.csv",train_x,delimiter=",")
