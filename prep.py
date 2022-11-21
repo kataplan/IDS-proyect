@@ -41,7 +41,7 @@ def label_binary(df:np.ndarray,file_name:str):
             aux = [0,1]
 
         binary_array.append(aux)
-    np.savetxt(file_name,binary_array,delimiter=",")
+    np.savetxt(file_name,binary_array,delimiter=",",fmt='%d')
     return (binary_array)
     
 config = np.genfromtxt("cnf_sv.csv", dtype=int, delimiter=",")
