@@ -25,7 +25,7 @@ def iniSwarm(K,m,L,n_p):
     return(S, P, Pg, V)
 
 # Fitness by use MSE
-def Fitness_mse(y, x,S, n_p,L,n_activation):
+def Fitness_mse(y,x,S,n_p,L,n_activation):
     m = x.shape[1]
     K = y.shape[1]
     N = x.shape[0]

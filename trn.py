@@ -21,7 +21,6 @@ def load_data(x_name,y_name):
 def save_w(w1,w2):
     W = [w1,w2]
     np.savez('pesos.npz', W=W)
-    return
 
 # Training: ANN-BP
 def ann_bp(w,v,x,y,pso_param,bp_param):
@@ -35,11 +34,11 @@ def ann_bp(w,v,x,y,pso_param,bp_param):
         d,h = bp.forward(x,weights,n_activation)
         diff = d-y
         e = np.sum((np.asarray(diff[:,0]))**2+(np.asarray(diff[:,1]))**2)/(N*2)
-
         g_w,g_v = bp.ann_gradW(x,w,v,h,diff,n_activation)
         w, v = bp.ann_updW(w, v, g_w,g_v, learning_rate)
         weights=[w, v]
         fits.append(e)
+    np.savetxt('costo_gd.csv', fits, fmt='%1.10f')
     return (w,v)
 
 # Training : ANN-PSO
@@ -58,7 +57,6 @@ def ann_pso(x,y,param):
         V = pso.upd_veloc(S,P,Pg,V,alpha)
         best_mse.append(good_mse)
         S = S + V
-    np.savetxt("mse.csv",best_mse,delimiter=",",fmt="%1.5f")
     Pg = Pg[0]
     w = Pg[:,:x.shape[1]*hidden_nodes_number].reshape(hidden_nodes_number, x.shape[1])
     v = Pg[:,-len(y[0])*hidden_nodes_number:].reshape(len(y[0]),hidden_nodes_number)

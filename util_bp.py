@@ -20,13 +20,13 @@ def forward(x,W,n_function):
 def act_function(w,X,function_number):
     z = np.dot(w, X.T)
     if(function_number==1):
-        h_z = ReLu_function(z)
+        h_z = ReLu_function(z).T
     if(function_number==2):
-        h_z = L_ReLu_function(z)
+        h_z = L_ReLu_function(z).T
     if(function_number==3):
-        h_z = ELU_function(z)
+        h_z = ELU_function(z).T
     if(function_number==4):
-        h_z = SELU_function(z)
+        h_z = SELU_function(z).T
     if(function_number==5):
         h_z = sigmoidal_function(z).T
     return(h_z)
@@ -48,11 +48,12 @@ def ann_gradW(x,w,v,h,e,function_number):
     dE_dv = np.dot(delta_0.T, h.T)
     gh = np.asarray(np.dot(v.T, delta_0.T))
     der = np.asarray(derivate_act(np.dot(w,x.T),function_number))
-    delta_h = np.multiply(gh , der.T)
-    if(function_number == 5):
-        dE_dw = np.dot( delta_h, np.asarray(x))
+    if(function_number==5):
+        delta_h = np.multiply(gh , der.T)
     else:
-        dE_dw = np.dot( delta_h, np.asarray(x))
+        delta_h = np.multiply(gh , der)
+
+    dE_dw = np.dot( delta_h, np.asarray(x))
 
     return dE_dw, dE_dv
 
