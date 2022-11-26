@@ -1,60 +1,41 @@
-# Pre-processing...
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import math
 
-# Load data
-def load_data(file_name:str):
-    file_data = np.genfromtxt(file_name, dtype=float, delimiter=",")
-    x = file_data[:,range(len(file_data[0])-1)]
-    y = file_data[:, len(file_data[0])-1]
-    return ( x , y )
-# Normazationg of the features
+def save_data(x_train: np.ndarray, y_train: np.ndarray, x_fname: str, y_fname: str) -> None:
+    np.savetxt(x_fname, x_train, delimiter=",", fmt="%1.5f")
+    np.savetxt(y_fname, y_train, delimiter=",", fmt="%d")
 
+def get_binary_column(y_train) :
+    y_train= pd.Series(y_train.astype(int))
+    y_dummies = pd.get_dummies(y_train)
+    return y_dummies.to_numpy()
 
-def norma_data(df: np.ndarray):
-    b = 0.99
-    a = 0.01
-    x_min = df.min(axis=0)
-    x_max = df.max(axis=0)
-    return ((df[:, :len(df[0])] - x_min) * (1 / ((x_max - x_min) + math.pow(10, -8)))) * (b - a) + a
-# Create binary label
+def normalize_features(file_data,a,b):
+    x_max = file_data.max(axis=0)
+    x_min = file_data.min(axis=0)
+    return ((file_data[:, :40] - x_min) * (1 / ((x_max - x_min) + math.pow(10, -8)))) * (
+        b - a
+    ) + a
 
+filter_v = np.genfromtxt("filter_v.csv", delimiter=",", dtype=float)
+index = np.genfromtxt("index.csv", delimiter=",", dtype=int)
+index -= 1
 
-def label_binary(df:np.ndarray,file_name:str):
-    binary_array = []
-    aux = []
-    for x in df:
-        if(x==1):
-            aux = [1,0]
-        if(x==2):
-            aux = [0,1]
+data_train = np.genfromtxt("dtrn.csv", delimiter=",", dtype=float)
+y_train= data_train[:, 41].astype(int)
+y_train= get_binary_column(y_train)
+x_train = data_train[:, index]
+x_train = normalize_features(x_train, 0.01, 0.99)
+x_train = np.matmul(x_train, filter_v)
+save_data(x_train, y_train, "xtrn.csv", "ytrn.csv")
 
-        binary_array.append(aux)
-    np.savetxt(file_name,binary_array,delimiter=",",fmt='%d')
-    return (binary_array)
-    
+data_test = np.genfromtxt("dtst.csv", delimiter=",", dtype=float)
 
-train_x, train_y = load_data("dtrn.csv")
-test_x, test_y = load_data("dtst.csv")
-
-train_y = label_binary(train_y,"ytrn.csv")
-test_y = label_binary(test_y, "ytst.csv")
-
-index = np.genfromtxt("index.csv", dtype=int, delimiter=",")
-
-train_x = norma_data(train_x)
-test_x = norma_data(test_x)
-
-index = index -1
-train_x = train_x[:,index]
-test_x = test_x[:,index]
-filter_v = np.genfromtxt("filter_v.csv", dtype=float, delimiter=",",)
-
-train_x = np.matmul(filter_v.T , train_x.T).T
-test_x = np.matmul(filter_v.T , test_x.T).T
-
-
-np.savetxt("xtrn.csv",train_x,delimiter=",",fmt="%1.5f")
-np.savetxt("xtst.csv",train_x,delimiter=",",fmt="%1.5f")
+y_test = data_test[:, 41].astype(int)
+y_test = get_binary_column(y_test)
+x_test = data_test[:, index]
+x_test = normalize_features(x_test, 0.01, 0.99)
+x_test = np.matmul(x_test, filter_v)
+save_data(x_test, y_test, "xtst.csv", "ytst.csv")

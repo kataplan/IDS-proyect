@@ -38,6 +38,7 @@ def ann_bp(w,v,x,y,pso_param,bp_param):
         w, v = bp.ann_updW(w, v, g_w,g_v, learning_rate)
         weights=[w, v]
         fits.append(e)
+        
     np.savetxt('costo_gd.csv', fits, fmt='%1.10f')
     return (w,v)
 
