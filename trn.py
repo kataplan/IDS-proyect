@@ -33,14 +33,13 @@ def ann_bp(w,v,x,y,pso_param,bp_param):
     fits =[]
     for i in range(max_iter):
         d,h = bp.forward(x,weights,n_activation)
-        diff = y-d
+        diff = d-y
         e = np.sum((np.asarray(diff[:,0]))**2+(np.asarray(diff[:,1]))**2)/(N*2)
 
-        g_w,g_v = bp.ann_gradW(x,w,v,h,e,n_activation)
+        g_w,g_v = bp.ann_gradW(x,w,v,h,diff,n_activation)
         w, v = bp.ann_updW(w, v, g_w,g_v, learning_rate)
         weights=[w, v]
         fits.append(e)
-
     return (w,v)
 
 # Training : ANN-PSO

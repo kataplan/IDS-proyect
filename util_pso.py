@@ -36,7 +36,6 @@ def Fitness_mse(y, x,S, n_p,L,n_activation):
         v = S[i,-K*L:].reshape(K,L)
         weights = [w,v]
         d,h = bp.forward(x,weights,n_activation)
-        
         diff = y-d
         e = np.sum((np.asarray(diff[:,0]))**2+(np.asarray(diff[:,1]))**2)/(N*2)
         fits[i] = e

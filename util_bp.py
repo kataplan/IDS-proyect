@@ -28,13 +28,13 @@ def act_function(w,X,function_number):
     if(function_number==4):
         h_z = SELU_function(z)
     if(function_number==5):
-        h_z = sigmoidal_function(z)
-    return(h_z.T)
+        h_z = sigmoidal_function(z).T
+    return(h_z)
     
 # Derivative of  Activation function    
 def derivate_act(z,function_number):
     if(function_number==1):h_z = d_ReLu_function(z)
-    elif(function_number==2): h_z = d_L_ReLu_function(z)
+    elif(function_number==2):h_z = d_L_ReLu_function(z)
     elif(function_number==3):h_z = d_ELU_function(z)
     elif(function_number==4):h_z = d_SELU_function(z)
     elif(function_number==5):h_z = d_sigmoidal_function(z)
@@ -42,14 +42,17 @@ def derivate_act(z,function_number):
 
 # STEP 2: Feed-Backward: 
 def ann_gradW(x,w,v,h,e,function_number):
-    h = h.T    
-    delta_0 = e * derivate_act(np.dot(v,h),function_number)
-    dE_dv = np.dot(delta_0, h.T)
-    gh = np.asarray(np.dot(v.T, delta_0))
+    h = h.T
+    x = np.asmatrix(x)
+    delta_0 = np.multiply(e , derivate_act(np.dot(v,h),5))
+    dE_dv = np.dot(delta_0.T, h.T)
+    gh = np.asarray(np.dot(v.T, delta_0.T))
     der = np.asarray(derivate_act(np.dot(w,x.T),function_number))
-    delta_h = np.multiply(gh , der)
-    dE_dw = np.dot( delta_h, np.asarray(x))
-   
+    delta_h = np.multiply(gh , der.T)
+    if(function_number == 5):
+        dE_dw = np.dot( delta_h, np.asarray(x))
+    else:
+        dE_dw = np.dot( delta_h, np.asarray(x))
 
     return dE_dw, dE_dv
 
@@ -98,5 +101,5 @@ def d_SELU_function(x):
     return np.where(x>0, 1, a*np.exp(x))*lam
       
 def d_sigmoidal_function(z):
-    return (np.exp(-z)/((1+np.exp(-z))**2))
+    return (np.multiply(1/(1+np.exp(-z)),1-(1/(1+np.exp(-z))))).T
 #-----------------------------------------------------------------------
