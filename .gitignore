@@ -10,3 +10,7 @@ ytrn.csv
 xtrn.csv
 xtst.csv
 ytst.csv
+*.ipynb
+*.txt
+*.npz
+mse.csv
