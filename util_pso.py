@@ -59,7 +59,7 @@ def upd_pFitness(P, Pg, fits,S, n_p,):
     P = [p_position,p_mse]
     Pg = [pg_position,pg_mse]
     
-    return(P,Pg,pg_mse)
+    return(P,Pg)
 
 # Update: Swarm's velocity
 def upd_veloc(S,P,Pg,V,alpha):

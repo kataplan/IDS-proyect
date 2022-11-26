@@ -38,8 +38,8 @@ def ann_bp(w,v,x,y,pso_param,bp_param):
         w, v = bp.ann_updW(w, v, g_w,g_v, learning_rate)
         weights=[w, v]
         fits.append(e)
-        
-    np.savetxt('costo_gd.csv', fits, fmt='%1.10f')
+
+    np.savetxt('costos_bp.csv', fits, fmt='%1.10f')
     return (w,v)
 
 # Training : ANN-PSO
@@ -48,16 +48,17 @@ def ann_pso(x,y,param):
     hidden_nodes_number = param[1]
     particle_number = param[2]
     max_iter = param[3]
+    costos = []
     S, P, Pg, V = pso.iniSwarm( L = hidden_nodes_number , m = x.shape[1] ,K = len(y[0]), n_p = particle_number )
-    best_mse=[]
     for i in range(max_iter):
-        
         Fits = pso.Fitness_mse(y, x, S, particle_number,hidden_nodes_number,hidden_activation)
-        P, Pg,good_mse = pso.upd_pFitness(P, Pg, Fits,S,particle_number)
+        P, Pg = pso.upd_pFitness(P, Pg, Fits,S,particle_number)
         alpha = pso.calc_alpha(i,max_iter)
         V = pso.upd_veloc(S,P,Pg,V,alpha)
-        best_mse.append(good_mse)
         S = S + V
+        costos.append(Pg[1])
+    np.savetxt('costos_pso.csv', costos, fmt='%1.10f')
+
     Pg = Pg[0]
     w = Pg[:,:x.shape[1]*hidden_nodes_number].reshape(hidden_nodes_number, x.shape[1])
     v = Pg[:,-len(y[0])*hidden_nodes_number:].reshape(len(y[0]),hidden_nodes_number)
